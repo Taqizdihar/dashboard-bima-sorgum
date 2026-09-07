@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Library, 
-  Search, 
-  Beaker, 
+  MessageSquareText, 
   Cpu, 
-  History, 
-  PlaySquare,
-  GitCommit,
-  CheckCircle,
-  Activity,
-  Settings,
+  Activity, 
+  Settings, 
   Menu
 } from 'lucide-react';
 import { cn } from '../utils/cn';
@@ -20,36 +15,26 @@ const navGroups = [
   {
     title: 'OVERVIEW',
     items: [
-      { name: 'Overview', path: '/', icon: LayoutDashboard }
+      { name: 'Home', path: '/', icon: LayoutDashboard }
     ]
   },
   {
-    title: 'RAG',
+    title: 'KNOWLEDGE',
     items: [
-      { name: 'Knowledge Base', path: '/knowledge-base', icon: Library },
-      { name: 'Retrieval Explorer', path: '/retrieval', icon: Search },
-      { name: 'RAG Playground', path: '/rag-playground', icon: Beaker }
+      { name: 'List Dokumen', path: '/knowledge', icon: Library }
     ]
   },
   {
-    title: 'LLM',
+    title: 'AI ENGINE',
     items: [
-      { name: 'Models', path: '/models', icon: Cpu },
-      { name: 'Requests', path: '/requests', icon: History },
-      { name: 'LLM Playground', path: '/llm-playground', icon: PlaySquare }
-    ]
-  },
-  {
-    title: 'PIPELINE',
-    items: [
-      { name: 'Executions', path: '/executions', icon: GitCommit },
-      { name: 'Validation', path: '/validation', icon: CheckCircle }
+      { name: 'Chat / RAG Test', path: '/chat', icon: MessageSquareText },
+      { name: 'Models', path: '/models', icon: Cpu }
     ]
   },
   {
     title: 'SYSTEM',
     items: [
-      { name: 'API & Logs', path: '/logs', icon: Activity },
+      { name: 'API & Docs', path: '/docs', icon: Activity },
       { name: 'Settings', path: '/settings', icon: Settings }
     ]
   }
@@ -120,11 +105,7 @@ export default function DashboardLayout() {
           <div className={cn("flex flex-col space-y-2", collapsed && "items-center")}>
             <div className="flex items-center text-xs">
               <div className="mr-2 h-2 w-2 rounded-full bg-emerald-500" />
-              {!collapsed && <span className="font-medium text-slate-600">AI Server</span>}
-            </div>
-            <div className="flex items-center text-xs">
-              <div className="mr-2 h-2 w-2 rounded-full bg-emerald-500" />
-              {!collapsed && <span className="font-medium text-slate-600">RAG Engine</span>}
+              {!collapsed && <span className="font-medium text-slate-600">BIMA Backend</span>}
             </div>
           </div>
         </div>

@@ -1,4 +1,61 @@
-export type SystemStatus = 'Online' | 'Offline' | 'Degraded';
+export type SystemStatus = 'Online' | 'Offline' | 'Unknown';
+
+export interface HealthStatus {
+  status: SystemStatus;
+  chunksCount: number;
+  documentsCount: number;
+}
+
+export type DocumentStatus = 'Ready' | 'Indexing' | 'Failed' | 'Needs Reindex';
+
+export interface KnowledgeFileSummary {
+  name: string;
+  type: string;
+  chunksCount: number;
+  status: DocumentStatus;
+}
+
+export interface KnowledgeFileDetail extends KnowledgeFileSummary {
+  chunks: KnowledgeChunk[];
+}
+
+export interface KnowledgeChunk {
+  id: string;
+  text: string;
+}
+
+export interface WatchedFolder {
+  path: string;
+}
+
+export interface FolderScanResult {
+  newFilesFound: number;
+}
+
+export interface AIModel {
+  id: string;
+  name: string;
+  provider: string;
+}
+
+export interface ChatSource {
+  documentName: string;
+  chunkId: string;
+  text?: string;
+}
+
+export interface ChatInput {
+  message: string;
+  model: string;
+  useRag: boolean;
+}
+
+export interface AppSettings {
+  bimaBackendUrl: string;
+  llmServerUrl: string;
+  apiKey: string;
+  watchedFolder: string;
+}
 
 export interface SystemHealth {
   ragEngine: SystemStatus;
@@ -9,8 +66,6 @@ export interface SystemHealth {
   validationPassRate: number;
 }
 
-export type DocumentStatus = 'Ready' | 'Indexing' | 'Failed' | 'Needs Reindex';
-
 export interface KnowledgeSource {
   id: string;
   name: string;
@@ -20,12 +75,6 @@ export interface KnowledgeSource {
   source: string;
   indexedAt: string;
   status: DocumentStatus;
-}
-
-export interface KnowledgeChunk {
-  id: string;
-  documentId: string;
-  text: string;
 }
 
 export interface RetrievalResult {
