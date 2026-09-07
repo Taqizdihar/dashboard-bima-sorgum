@@ -1,0 +1,6 @@
+{
+  "name": "BIMA AI Dashboard",
+  "description": "Internal technical management dashboard for BIMA Sorgum AI (Basis Informasi Penelitian dan Pengabdian kepada Masyarakat)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
