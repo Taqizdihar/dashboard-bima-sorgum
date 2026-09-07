@@ -10,7 +10,7 @@ import { Button } from '../components/ui/Button';
 export default function Models() {
   const [models, setModels] = useState<AIModel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [serverUrl, setServerUrl] = useState(import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:11434');
+  const [serverUrl, setServerUrl] = useState(localStorage.getItem('llmServerUrl') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:11434');
   const [apiKey, setApiKey] = useState('');
 
   const loadModels = async () => {

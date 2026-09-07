@@ -12,16 +12,16 @@ export default function Settings() {
 
   useEffect(() => {
     // Load from local storage or default to env
-    setBimaBackendUrl(localStorage.getItem('VITE_BIMA_BACKEND_URL') || import.meta.env.VITE_BIMA_BACKEND_URL || 'http://localhost:8000');
-    setLlmServerUrl(localStorage.getItem('VITE_LLM_SERVER_URL') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:11434');
+    setBimaBackendUrl(localStorage.getItem('bimaBackendUrl') || import.meta.env.VITE_BIMA_BACKEND_URL || 'http://localhost:8000');
+    setLlmServerUrl(localStorage.getItem('llmServerUrl') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:11434');
   }, []);
 
   const handleSave = async () => {
     setSaving(true);
     
     // In a real app we might validate these URLs before saving
-    localStorage.setItem('VITE_BIMA_BACKEND_URL', bimaBackendUrl);
-    localStorage.setItem('VITE_LLM_SERVER_URL', llmServerUrl);
+    localStorage.setItem('bimaBackendUrl', bimaBackendUrl);
+    localStorage.setItem('llmServerUrl', llmServerUrl);
     
     await new Promise(r => setTimeout(r, 600));
     setSaving(false);

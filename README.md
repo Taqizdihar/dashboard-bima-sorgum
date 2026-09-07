@@ -2,36 +2,26 @@
 
 This is the internal technical management dashboard for **BIMA Sorgum AI** (Basis Informasi Penelitian dan Pengabdian kepada Masyarakat).
 
-This application serves as the control center for developers, researchers, and administrators to observe, debug, and manage the AI pipeline, RAG knowledge base, and validation systems.
+This application serves as the control center for developers, researchers, and administrators to observe, debug, and manage the AI pipeline, RAG knowledge base, and models.
 
 *Note: This is NOT the consumer-facing recipe app ("Dapur Sorgum Ceria").*
 
-## Current Architecture
+## Architecture
 
-- **Frontend Framework**: React 18, Vite, TypeScript
+- **Frontend**: React 19, Vite, TypeScript
 - **Routing**: React Router
 - **Styling**: Tailwind CSS, Lucide React
-- **API Strategy**: Clean separation between UI and data fetching. The app currently runs in **Mock API Mode** so it can be developed and styled completely independently of the backend.
+- **API Strategy**: The app utilizes a service layer (`src/services/`) that switches between a `MockBimaApi` and `HttpBimaApi` based on environment variables. 
+- **Mock First**: The app defaults to **Mock API Mode** to allow seamless frontend review without requiring the actual backend server to be running.
 
-### Project Structure
+### Key Features (MVP)
 
-```
-src/
-├── components/
-│   └── ui/           # Reusable styled UI components (Cards, Buttons, Tables, etc.)
-├── layouts/
-│   └── DashboardLayout.tsx # Main application shell and sidebar
-├── pages/            # Page-level components matching the sidebar navigation
-├── services/
-│   ├── api.ts        # The main BimaApi interface
-│   └── mockApi.ts    # The mock implementation used for this MVP
-├── mocks/
-│   └── data.ts       # Coherent BIMA-specific mock datasets
-├── types/
-│   └── index.ts      # TypeScript interfaces for the domain models
-└── utils/
-    └── cn.ts         # Tailwind class merging utility
-```
+- **Home**: System health, RAG chunk counts, and quick action links.
+- **List Dokumen**: Manage the knowledge base. View details, chunks, and support for document ingestion via single file upload or folder scanning.
+- **Chat / RAG Test**: A mock streaming interface to test prompts against the LLM/RAG engine.
+- **Models**: List available LLM models on the currently configured server.
+- **API & Docs**: Reference for the frontend-to-backend API contract.
+- **Settings**: Configure the BIMA Backend URL and LLM Server URL (saved to local storage).
 
 ## Running the Project
 
@@ -40,33 +30,16 @@ npm install
 npm run dev
 ```
 
-The application will start in mock mode, rendering realistic BIMA data without needing the actual AI server or PostgreSQL database.
+The application will start on port 3000. 
 
-## Environment Variables
+## Configuration
 
-Copy `.env.example` to `.env` if needed. 
+The application reads from local storage first, then falls back to environment variables. See `.env.example`:
 
 ```env
-# Future use:
 VITE_USE_MOCK_API=true
-VITE_AI_BASE_URL=http://localhost:20128/v1
+VITE_BIMA_BACKEND_URL="http://localhost:8000"
+VITE_LLM_SERVER_URL="http://localhost:11434"
 ```
 
-Currently, the `mockApi` is hardcoded to be used in the pages to guarantee the MVP works out-of-the-box.
-
-## Future API Integration
-
-To connect the real backend later:
-
-1. Create a `HttpBimaApi` class that implements the `BimaApi` interface in `src/services/api.ts`.
-2. Map the domain types (like `PipelineExecution` or `SystemHealth`) to your real REST/GraphQL responses.
-3. Replace the `mockApi` imports in the pages with a configured instance of your HTTP adapter, ideally driven by `VITE_USE_MOCK_API`.
-
-## BIMA Pipeline Modules
-
-The dashboard pages map directly to the planned BIMA pipeline architecture:
-
-- **RAG / Knowledge Base**: Manages the documents (e.g., AKG, TKPI) injected into the pipeline.
-- **RAG / Retrieval Explorer**: Debugs what the AI is retrieving given a query, exposing similarities without exposing private chain-of-thought.
-- **Pipeline / Executions**: Visualizes the full trace of: `User Input -> RAG -> Constraint Builder -> LLM Generation -> Nutrition Calculator -> Rule Validator -> Output`.
-- **Pipeline / Validation**: Shows the deterministic checking of nutritional constraints against the generated recipe.
+To connect to a real backend, set `VITE_USE_MOCK_API=false` and provide the correct URLs. Or, configure them in the Settings page in the UI.

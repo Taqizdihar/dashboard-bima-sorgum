@@ -10,6 +10,7 @@ import {
   Menu
 } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { useMock } from '../services';
 
 const navGroups = [
   {
@@ -104,8 +105,12 @@ export default function DashboardLayout() {
         <div className="border-t border-slate-200 p-4">
           <div className={cn("flex flex-col space-y-2", collapsed && "items-center")}>
             <div className="flex items-center text-xs">
-              <div className="mr-2 h-2 w-2 rounded-full bg-emerald-500" />
-              {!collapsed && <span className="font-medium text-slate-600">BIMA Backend</span>}
+              <div className={cn("mr-2 h-2 w-2 rounded-full", useMock ? "bg-amber-500" : "bg-emerald-500")} />
+              {!collapsed && (
+                <span className="font-medium text-slate-600">
+                  {useMock ? "Mock API Mode" : "Backend Connected"}
+                </span>
+              )}
             </div>
           </div>
         </div>

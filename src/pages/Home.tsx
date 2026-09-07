@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { ShieldCheck, Database, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { apiClient } from '../services';
 import { HealthStatus } from '../types';
 import { Card } from '../components/ui/Card';
 
 export default function Home() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
+  const [docCount, setDocCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    apiClient.getHealth()
-      .then(setHealth)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    Promise.all([
+      apiClient.getHealth().then(setHealth),
+      apiClient.listKnowledgeFiles().then(files => setDocCount(files.length))
+    ]).catch(console.error).finally(() => setLoading(false));
   }, []);
 
   return (
@@ -45,7 +47,7 @@ export default function Home() {
           <div>
             <p className="text-sm font-medium text-slate-500">Indexed Documents</p>
             <h3 className="text-2xl font-bold text-slate-900 mt-1">
-              {loading ? '...' : health?.documentsCount ?? 0}
+              {loading ? '...' : docCount ?? 0}
             </h3>
           </div>
         </Card>
@@ -66,14 +68,18 @@ export default function Home() {
       <Card className="p-6">
         <h3 className="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <a href="/knowledge" className="p-4 border border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors flex flex-col items-start">
+          <Link to="/knowledge" className="p-4 border border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors flex flex-col items-start">
             <span className="font-medium text-slate-900">Manage Knowledge Base</span>
             <span className="text-sm text-slate-500 mt-1">Upload and manage RAG documents</span>
-          </a>
-          <a href="/chat" className="p-4 border border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors flex flex-col items-start">
+          </Link>
+          <Link to="/chat" className="p-4 border border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors flex flex-col items-start">
             <span className="font-medium text-slate-900">Test RAG</span>
             <span className="text-sm text-slate-500 mt-1">Run queries and check responses</span>
-          </a>
+          </Link>
+          <Link to="/docs" className="p-4 border border-slate-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition-colors flex flex-col items-start">
+            <span className="font-medium text-slate-900">View API Docs</span>
+            <span className="text-sm text-slate-500 mt-1">Check endpoints and payloads</span>
+          </Link>
         </div>
       </Card>
     </div>

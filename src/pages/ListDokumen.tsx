@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { UploadCloud, RefreshCw, Folder, Trash2, FileText, CheckCircle2, Clock } from 'lucide-react';
+import { UploadCloud, RefreshCw, Folder, Trash2, FileText, CheckCircle2, Clock, X } from 'lucide-react';
 import { apiClient } from '../services';
-import { KnowledgeFileSummary, WatchedFolder } from '../types';
+import { KnowledgeFileSummary, KnowledgeFileDetail, WatchedFolder } from '../types';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -14,6 +14,9 @@ export default function ListDokumen() {
   const [watchedFolder, setWatchedFolder] = useState<WatchedFolder | null>(null);
   const [scanning, setScanning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [selectedDoc, setSelectedDoc] = useState<KnowledgeFileDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   const loadData = async () => {
     try {
@@ -66,7 +69,8 @@ export default function ListDokumen() {
     }
   };
 
-  const handleDelete = async (name: string) => {
+  const handleDelete = async (e: React.MouseEvent, name: string) => {
+    e.stopPropagation();
     if (!confirm(`Are you sure you want to delete ${name}?`)) return;
     try {
       await apiClient.deleteKnowledgeFile(name);
@@ -111,6 +115,19 @@ export default function ListDokumen() {
       console.error("Choose folder failed", err);
     }
   };
+  
+  const handleViewDoc = async (name: string) => {
+    setDetailLoading(true);
+    setSelectedDoc(null);
+    try {
+      const detail = await apiClient.getKnowledgeFile(name);
+      setSelectedDoc(detail);
+    } catch (err) {
+      console.error("Failed to fetch doc details", err);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
 
   const renderStatus = (status: string) => {
     switch (status) {
@@ -143,6 +160,7 @@ export default function ListDokumen() {
             ref={fileInputRef} 
             onChange={handleFileUpload} 
             className="hidden" 
+            accept=".pdf,.txt,.md,.ipynb"
           />
         </div>
       </div>
@@ -158,7 +176,7 @@ export default function ListDokumen() {
             >
               <UploadCloud size={32} className="mb-3 text-emerald-600" />
               <p className="font-medium text-slate-700">Click or drag file to this area to upload</p>
-              <p className="text-sm mt-1">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p>
+              <p className="text-sm mt-1">Supported formats: .pdf, .txt, .md, .ipynb</p>
             </div>
             
             <div className="px-6 pb-6">
@@ -180,7 +198,7 @@ export default function ListDokumen() {
                   </thead>
                   <tbody>
                     {files.map(file => (
-                      <tr key={file.name}>
+                      <tr key={file.name} className="cursor-pointer hover:bg-slate-50" onClick={() => handleViewDoc(file.name)}>
                         <td className="font-medium">
                           <div className="flex items-center text-slate-900">
                             <FileText size={16} className="text-slate-400 mr-2" />
@@ -192,7 +210,7 @@ export default function ListDokumen() {
                         <td>{renderStatus(file.status)}</td>
                         <td className="text-right">
                           <button 
-                            onClick={() => handleDelete(file.name)}
+                            onClick={(e) => handleDelete(e, file.name)}
                             className="text-slate-400 hover:text-red-500 transition-colors p-1"
                           >
                             <Trash2 size={16} />
@@ -207,7 +225,7 @@ export default function ListDokumen() {
           </Card>
         </div>
 
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
           <Card className="p-6">
             <div className="flex items-center space-x-2 mb-4">
               <Folder className="text-emerald-600" size={20} />
@@ -225,7 +243,7 @@ export default function ListDokumen() {
                     type="text" 
                     readOnly
                     value={watchedFolder?.path || 'Not set'}
-                    className="flex-1 rounded-l-md border border-slate-300 px-3 py-2 text-sm bg-slate-50 text-slate-700"
+                    className="flex-1 rounded-l-md border border-slate-300 px-3 py-2 text-sm bg-slate-50 text-slate-700 focus:outline-none"
                   />
                   <Button variant="secondary" className="rounded-l-none" onClick={handleChooseFolder}>
                     Change
@@ -245,6 +263,53 @@ export default function ListDokumen() {
               </Button>
             </div>
           </Card>
+          
+          {(selectedDoc || detailLoading) && (
+            <Card className="p-6 animate-in slide-in-from-right-4">
+              <div className="flex justify-between items-start mb-4 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">{detailLoading ? 'Loading...' : selectedDoc?.name}</h3>
+                  <p className="text-xs text-slate-500 mt-1">Document Details & Chunks</p>
+                </div>
+                <button onClick={() => setSelectedDoc(null)} className="text-slate-400 hover:text-slate-600">
+                  <X size={20} />
+                </button>
+              </div>
+              
+              {detailLoading ? (
+                 <div className="text-center py-8 text-slate-500">Loading details...</div>
+              ) : selectedDoc ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-slate-50 p-3 rounded-md border border-slate-100">
+                      <p className="text-xs text-slate-500 font-medium mb-1">Type</p>
+                      <p className="font-semibold text-slate-800">{selectedDoc.type}</p>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded-md border border-slate-100">
+                      <p className="text-xs text-slate-500 font-medium mb-1">Status</p>
+                      <div>{renderStatus(selectedDoc.status)}</div>
+                    </div>
+                  </div>
+                  
+                  <h4 className="font-medium text-slate-700 mb-2">Chunks ({selectedDoc.chunksCount})</h4>
+                  <div className="max-h-96 overflow-y-auto space-y-3 pr-2">
+                    {selectedDoc.chunks && selectedDoc.chunks.length > 0 ? (
+                      selectedDoc.chunks.map(chunk => (
+                        <div key={chunk.id} className="bg-white border border-slate-200 rounded-md p-3 shadow-sm">
+                          <p className="text-xs font-mono text-slate-400 mb-2">{chunk.id}</p>
+                          <p className="text-sm text-slate-700 leading-relaxed">{chunk.text}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-slate-500 border border-slate-100 border-dashed rounded-md bg-slate-50">
+                        No chunks available.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </Card>
+          )}
         </div>
       </div>
     </div>
