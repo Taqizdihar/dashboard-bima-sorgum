@@ -120,19 +120,15 @@ Supported Formats: .pdf, .txt, .md, .ipynb`}
           description="List available LLMs from the provider."
           details={`Required Headers:
 X-Server-Url: string
-X-Api-Key: string (optional)`}
+X-Api-Key: string`}
         />
         
         <Endpoint 
           method="POST" 
           path="/api/chat" 
           description="Stream chat with the RAG engine."
-          details={`Request JSON Schema:
-{
-  "message": "string",
-  "model": "string",
-  "useRag": boolean
-}
+          details={`Request payload:
+Exact request schema pending backend confirmation.
 
 Response format: Server-Sent Events (SSE) streaming.
 Conceptual sequence: sources -> delta -> delta -> ... -> [DONE]

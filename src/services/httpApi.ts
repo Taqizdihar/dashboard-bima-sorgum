@@ -109,7 +109,7 @@ export class HttpBimaApi implements BimaApi {
   }
 
   streamChat(input: ChatInput, callbacks: ChatStreamCallbacks): void {
-    // Request payload mapping pending backend confirmation
+    // Pending final backend request schema.
     fetch(this.getUrl('/api/chat'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

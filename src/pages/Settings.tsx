@@ -3,17 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
-import { Save, Server, Link2, HardDrive } from 'lucide-react';
+import { Save, Server, Link2, HardDrive, Key } from 'lucide-react';
 
 export default function Settings() {
   const [bimaBackendUrl, setBimaBackendUrl] = useState('');
   const [llmServerUrl, setLlmServerUrl] = useState('');
+  const [llmApiKey, setLlmApiKey] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     // Load from local storage or default to env
-    setBimaBackendUrl(localStorage.getItem('bimaBackendUrl') || import.meta.env.VITE_BIMA_BACKEND_URL || 'http://localhost:8000');
-    setLlmServerUrl(localStorage.getItem('llmServerUrl') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:11434');
+    setBimaBackendUrl(localStorage.getItem('bimaBackendUrl') ?? import.meta.env.VITE_BIMA_BACKEND_URL ?? '');
+    setLlmServerUrl(localStorage.getItem('llmServerUrl') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:20128/v1');
+    setLlmApiKey(localStorage.getItem('llmApiKey') || '');
   }, []);
 
   const handleSave = async () => {
@@ -22,6 +24,7 @@ export default function Settings() {
     // In a real app we might validate these URLs before saving
     localStorage.setItem('bimaBackendUrl', bimaBackendUrl);
     localStorage.setItem('llmServerUrl', llmServerUrl);
+    localStorage.setItem('llmApiKey', llmApiKey);
     
     await new Promise(r => setTimeout(r, 600));
     setSaving(false);
@@ -52,8 +55,9 @@ export default function Settings() {
               <Input 
                 value={bimaBackendUrl}
                 onChange={e => setBimaBackendUrl(e.target.value)}
+                placeholder="Leave blank for relative paths (e.g., if hosted together)"
               />
-              <p className="text-xs text-slate-500">Includes the host and port (e.g. http://localhost:8000). Leave out trailing slash.</p>
+              <p className="text-xs text-slate-500">Includes the host and port. Leave out trailing slash.</p>
             </div>
           </CardContent>
           <CardFooter className="border-t border-slate-100 bg-slate-50">
@@ -77,7 +81,21 @@ export default function Settings() {
               <Input 
                 value={llmServerUrl}
                 onChange={e => setLlmServerUrl(e.target.value)}
+                placeholder="http://localhost:20128/v1"
               />
+            </div>
+            <div className="grid gap-2">
+              <label className="text-sm font-medium text-slate-700">LLM API Key</label>
+              <div className="relative">
+                <Key className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <input 
+                  type="password" 
+                  value={llmApiKey}
+                  onChange={(e) => setLlmApiKey(e.target.value)}
+                  className="w-full rounded-md border border-slate-300 pl-9 pr-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                  placeholder="sk-..."
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -37,9 +37,23 @@ export default function ListDokumen() {
     loadData();
   }, []);
 
+  const ALLOWED_EXTENSIONS = ['.pdf', '.txt', '.md', '.ipynb'];
+
+  const validateFile = (file: File) => {
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      alert(`Invalid file type: ${ext}. Allowed formats: ${ALLOWED_EXTENSIONS.join(', ')}`);
+      return false;
+    }
+    return true;
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
-    if (!selected) return;
+    if (!selected || !validateFile(selected)) {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
     
     setUploading(true);
     try {
@@ -56,7 +70,7 @@ export default function ListDokumen() {
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files?.[0];
-    if (!droppedFile) return;
+    if (!droppedFile || !validateFile(droppedFile)) return;
 
     setUploading(true);
     try {

@@ -38,8 +38,14 @@ The application reads from local storage first, then falls back to environment v
 
 ```env
 VITE_USE_MOCK_API=true
-VITE_BIMA_BACKEND_URL="http://localhost:8000"
-VITE_LLM_SERVER_URL="http://localhost:11434"
+VITE_BIMA_BACKEND_URL=""
+VITE_LLM_SERVER_URL="http://localhost:20128/v1"
 ```
+
+- Mock mode is default.
+- BIMA backend URL is intentionally blank until backend host/port is confirmed.
+- LLM prototype URL example is http://localhost:20128/v1.
+- LLM API key is configured at runtime in Settings.
+- POST /api/chat request schema is still pending backend confirmation.
 
 To connect to a real backend, set `VITE_USE_MOCK_API=false` and provide the correct URLs. Or, configure them in the Settings page in the UI.

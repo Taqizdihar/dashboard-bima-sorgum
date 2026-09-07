@@ -10,8 +10,8 @@ import { Button } from '../components/ui/Button';
 export default function Models() {
   const [models, setModels] = useState<AIModel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [serverUrl, setServerUrl] = useState(localStorage.getItem('llmServerUrl') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:11434');
-  const [apiKey, setApiKey] = useState('');
+  const [serverUrl, setServerUrl] = useState(localStorage.getItem('llmServerUrl') ?? import.meta.env.VITE_LLM_SERVER_URL ?? 'http://localhost:20128/v1');
+  const [apiKey, setApiKey] = useState(localStorage.getItem('llmApiKey') || '');
 
   const loadModels = async () => {
     setLoading(true);
@@ -51,17 +51,20 @@ export default function Models() {
               value={serverUrl}
               onChange={(e) => setServerUrl(e.target.value)}
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
-              placeholder="http://localhost:11434"
+              placeholder="http://localhost:20128/v1"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">API Key (Optional)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">API Key</label>
             <div className="relative">
               <Key className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
               <input 
                 type="password" 
                 value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                onChange={(e) => {
+                  setApiKey(e.target.value);
+                  localStorage.setItem('llmApiKey', e.target.value);
+                }}
                 className="w-full rounded-md border border-slate-300 pl-9 pr-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
                 placeholder="sk-..."
               />

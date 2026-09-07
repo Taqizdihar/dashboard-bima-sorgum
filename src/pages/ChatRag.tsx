@@ -25,8 +25,9 @@ export default function ChatRag() {
 
   useEffect(() => {
     // Attempt to load models (using mock or local config)
-    const llmServerUrl = localStorage.getItem('llmServerUrl') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:11434';
-    apiClient.getModels(llmServerUrl, 'mock-key').then(data => {
+    const llmServerUrl = localStorage.getItem('llmServerUrl') || import.meta.env.VITE_LLM_SERVER_URL || 'http://localhost:20128/v1';
+    const apiKey = localStorage.getItem('llmApiKey') || '';
+    apiClient.getModels(llmServerUrl, apiKey).then(data => {
       setModels(data);
       if (data.length > 0) setSelectedModel(data[0].id);
     }).catch(console.error);
